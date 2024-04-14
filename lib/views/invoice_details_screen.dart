@@ -16,18 +16,37 @@ class InvoiceDetailsScreen extends StatefulWidget {
 }
 
 class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
-  /*
-  Map<String, dynamic> hintText = {
-    'Company': 'Mamaearth Ltd...',
-    'Product': 'Mamaearth neem Fashwash...',
-    'Quantity': '1,2,3...',
-    'Price': '₹ 200',
-    'Description':
-        'Is oil your skin\'s arch enemy? Meet the perfect blend of skin BFFs that banish acne, blemishes & that extra shine by just being their natural & amazing self!',
-  };
-  */
   final _formKey = GlobalKey<FormState>();
-  ProductData newProduct = ProductData();
+
+  String? company, product, description;
+  int? quantity;
+  double? price;
+  void resetVar() {
+    price = company = description = product = quantity = null;
+  }
+
+  void saveData() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      ProductData finalProduct = ProductData(
+        price: price,
+        company: company,
+        description: description,
+        product: product,
+        quantity: quantity,
+      );
+      finalProduct.getProductList();
+      Fluttertoast.showToast(msg: 'Product Added');
+
+      _formKey.currentState!.reset();
+      finalProduct.reset();
+      resetVar();
+      for (var i in productList) {
+        log('$i');
+      }
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +65,45 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
           color: Colors.black87,
         ),
         centerTitle: true,
+        forceMaterialTransparency: true,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              saveData();
+              invoice.add(List.from(productList));
+              log('$invoice');
+              productList.clear();
+              await showDialog(
+                context: context,
+                builder: (context) => SimpleDialog(
+                  // title:
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+                  children: [
+                    CircleAvatar(
+                      radius: 34,
+                      backgroundColor: Colors.transparent,
+                      child: Image.asset(
+                        'assets/images/done.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.only(bottom: 20, top: 18),
+                      child: TextWidget(
+                        title: 'Invoice Generated',
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    )
+                  ],
+                ),
+              );
+              Navigator.pop(context);
+            },
             icon: const Icon(
               Icons.check_rounded,
               size: 28,
@@ -75,7 +130,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                 color: Colors.black87,
               ),
               const SizedBox(
-                height: 40,
+                height: 34,
               ),
               Form(
                 key: _formKey,
@@ -84,52 +139,50 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                     TextFieldWidget(
                       hint: 'Mamaearth Ltd...',
                       labelText: 'Company',
-                      validatorVariable: newProduct.company,
+                      validatorVariable: company,
                       validatorFunc: (value) {
                         return value!.isEmpty ? 'enter company name' : null;
                       },
-                      saveData: (value) => newProduct.company = value,
+                      saveData: (value) => company = value,
                     ),
                     TextFieldWidget(
                       hint: 'Mamaearth neem Fashwash...',
                       labelText: 'Product',
-                      validatorVariable: newProduct.product,
+                      validatorVariable: product,
                       validatorFunc: (value) {
                         return value!.isEmpty ? 'enter product name' : null;
                       },
-                      saveData: (value) => newProduct.product = value,
+                      saveData: (value) => product = value,
                     ),
                     TextFieldWidget(
                       labelText: 'Quantity',
                       hint: '1,2,3...',
-                      validatorVariable: newProduct.quantity.toString(),
+                      validatorVariable: quantity?.toString() ?? '',
                       validatorFunc: (value) {
                         return value!.isEmpty ? 'enter quantity' : null;
                       },
-                      saveData: (value) =>
-                          newProduct.quantity = int.parse(value!),
+                      saveData: (value) => quantity = int.parse(value!),
                     ),
                     TextFieldWidget(
                       hint: '₹ 200',
                       labelText: 'Price',
-                      validatorVariable: newProduct.price.toString(),
+                      validatorVariable: price?.toString() ?? '',
                       validatorFunc: (value) {
                         return value!.isEmpty ? 'enter product price' : null;
                       },
-                      saveData: (value) =>
-                          newProduct.price = double.parse(value!),
+                      saveData: (value) => price = double.parse(value!),
                     ),
                     TextFieldWidget(
                       hint:
                           'Is oil your skin\'s arch enemy? Meet the perfect blend of skin BFFs that banish acne, blemishes & that extra shine by just being their natural & amazing self!',
                       labelText: 'Description',
-                      validatorVariable: newProduct.description,
+                      validatorVariable: description,
                       validatorFunc: (value) {
                         return value!.isEmpty
                             ? 'enter product description'
                             : null;
                       },
-                      saveData: (value) => newProduct.description = value,
+                      saveData: (value) => description = value,
                       maxline: 4,
                     ),
                   ],
@@ -137,19 +190,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    // productList.add(newProduct)
-                    newProduct.addToProductList();
-                    Fluttertoast.showToast(msg: 'Product Added');
-
-                    for (int i = 0; i < productList.length; i++) {
-                      log('${productList[i].price}');
-                    }
-                    _formKey.currentState!.reset();
-                    newProduct.reset();
-                    setState(() {});
-                  }
+                  saveData();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,

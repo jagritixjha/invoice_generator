@@ -3,18 +3,31 @@ class ProductData {
   int? quantity;
   double? price;
 
-  ProductData();
-
-  // static final ProductData products = ProductData._();
+  ProductData({
+    this.company,
+    this.product,
+    this.description,
+    this.quantity,
+    this.price,
+  });
 
   void reset() {
-    company = product = description = quantity = price = null;
+    company = product = description = null;
+    quantity = null;
+    price = null;
   }
 
-  void addToProductList() {
-    // Add the current instance of ProductData to the productList
-    productList.add(this);
+  void getProductList() {
+    Map<String, dynamic> productMap = {
+      'company': company,
+      'product': product,
+      'quantity': quantity,
+      'price': price,
+      'description': description,
+    };
+    productList.add(productMap);
   }
 }
 
-List<ProductData> productList = [];
+List<Map<String, dynamic>> productList = [];
+List<List> invoice = [];
