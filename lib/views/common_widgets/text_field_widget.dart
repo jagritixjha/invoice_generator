@@ -29,9 +29,9 @@ class TextFieldWidget extends StatelessWidget {
         children: [
           TextWidget(
             title: labelText!,
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.indigo.shade800,
           ),
           const SizedBox(
             height: 8,
