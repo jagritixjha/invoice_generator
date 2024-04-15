@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:invoice_generator/global_variables/product_data.dart';
 import 'package:invoice_generator/global_variables/ui_components.dart';
 import 'package:invoice_generator/views/common_widgets/text_field_widget.dart';
+import 'package:invoice_generator/views/home_screen.dart';
 
 import 'common_widgets/text_widget.dart';
 
@@ -102,7 +103,12 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                   ],
                 ),
               );
-              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HomeScreen(),
+                  ));
+              setState(() {});
             },
             icon: const Icon(
               Icons.check_rounded,
