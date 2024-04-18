@@ -27,12 +27,102 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> downloadPdf(Map product) async {
     final pdf = pw.Document();
     pdf.addPage(
-      pw.Page(
-        build: (pw.Context context) {
-          return pw.Center(
-            child: pw.Text('${product['company']}.'),
-          );
-        },
+      pw.MultiPage(
+        build: (pw.Context context) => [
+          pw.Header(
+            level: 0,
+            child: pw.Text(
+              'Invoice',
+              style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
+            ),
+          ),
+          ...invoice.map(
+            (transaction) => pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text(
+                  'Company: \t ${product['company']}',
+                  style: pw.TextStyle(
+                      fontSize: 10, fontWeight: pw.FontWeight.bold, height: 2),
+                ),
+                pw.SizedBox(height: 10),
+                pw.Row(children: [
+                  pw.Text(
+                    'Date: \t ${DateTime.now().toString().substring(0, 10)}',
+                    style: pw.TextStyle(
+                        fontSize: 10,
+                        fontWeight: pw.FontWeight.bold,
+                        height: 2),
+                  ),
+                  pw.SizedBox(width: 50),
+                  pw.Text(
+                    'Purchase Date: \t ${DateTime.now().toString().substring(0, 10)}',
+                    style: pw.TextStyle(
+                        fontSize: 10,
+                        fontWeight: pw.FontWeight.bold,
+                        height: 2),
+                  ),
+                ]),
+                pw.Divider(color: PdfColors.blueGrey200),
+                pw.SizedBox(height: 10),
+                pw.Text(
+                  'Transaction Details',
+                  style: pw.TextStyle(
+                    fontSize: 18,
+                    fontWeight: pw.FontWeight.bold,
+                    height: 2,
+                  ),
+                ),
+                pw.SizedBox(height: 20),
+                pw.TableHelper.fromTextArray(
+                  context: context,
+                  border: null,
+                  headerStyle: pw.TextStyle(
+                      fontWeight: pw.FontWeight.bold, color: PdfColors.grey800),
+                  headerDecoration:
+                      pw.BoxDecoration(color: PdfColors.indigo100),
+                  cellHeight: 30,
+                  cellAlignments: {
+                    0: pw.Alignment.centerLeft,
+                    1: pw.Alignment.centerRight,
+                    2: pw.Alignment.centerRight,
+                    3: pw.Alignment.centerRight,
+                    4: pw.Alignment.centerRight,
+                  },
+                  headers: [
+                    'Company',
+                    'Product',
+                    'Description',
+                    'Quantity',
+                    'Price'
+                  ],
+                  data: transaction
+                      .map((product) => [
+                            product['company'],
+                            product['product'],
+                            product['description'],
+                            product['quantity'].toString(),
+                            '\$${(product['price'] * product['quantity']).toStringAsFixed(2)}',
+                          ])
+                      .toList(),
+                ),
+                pw.Divider(color: PdfColors.blueGrey200),
+                // pw.Spacer(),
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.end,
+                  children: [
+                    pw.Text(
+                      'Total: \$${transaction.fold(0, (num sum, item) => sum + (item['price'] * item['quantity'])).toStringAsFixed(2)}',
+                      style: pw.TextStyle(
+                          fontSize: 14, fontWeight: pw.FontWeight.bold),
+                    ),
+                  ],
+                ),
+                pw.SizedBox(height: 20),
+              ],
+            ),
+          ),
+        ],
         pageFormat: PdfPageFormat.a4,
       ),
     );
@@ -131,13 +221,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 18, vertical: 18),
                           decoration: BoxDecoration(
-                              color: Colors.indigo.shade50,
-                              // color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.grey.shade200, blurRadius: 16)
-                              ]),
+                            color: Colors.indigo.shade50,
+                            // color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.grey.shade200, blurRadius: 16)
+                            ],
+                          ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
@@ -197,10 +288,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                         TextSpan(
                                           style: const TextStyle(
-                                              fontSize: 14,
-                                              height: 1.2,
-                                              color: Colors.black54,
-                                              fontWeight: FontWeight.w500),
+                                            fontSize: 14,
+                                            height: 1.2,
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w500,
+                                          ),
                                           text:
                                               '\n${totalPrice(invoice.first)}',
                                         ),
