@@ -20,7 +20,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   double totalPrice(List productList) {
     double totalPrice = 0;
-    totalPrice += productList.first['price'];
+    totalPrice += productList.first['price'] * productList.first['quantity'];
     return totalPrice;
   }
 
@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   headerStyle: pw.TextStyle(
                       fontWeight: pw.FontWeight.bold, color: PdfColors.grey800),
                   headerDecoration:
-                      pw.BoxDecoration(color: PdfColors.indigo100),
+                      const pw.BoxDecoration(color: PdfColors.indigo100),
                   cellHeight: 30,
                   cellAlignments: {
                     0: pw.Alignment.centerLeft,
@@ -208,18 +208,19 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           : Column(
               children: [
-                Expanded(
+                SizedBox(
+                  height: 650,
                   child: ListView.builder(
-                      itemCount: invoice.length,
+                      itemCount: productList.length,
                       itemBuilder: (context, index) {
-                        final product = invoice[index].first;
+                        final product = productList[index];
                         return Container(
                           height: 120,
                           width: double.infinity,
                           margin: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 16),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 18, vertical: 18),
+                              horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.only(
+                              top: 18, bottom: 18, left: 16, right: 6),
                           decoration: BoxDecoration(
                             color: Colors.indigo.shade50,
                             // color: Colors.white,
@@ -251,55 +252,51 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(
                                 width: 20,
                               ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text.rich(
-                                    TextSpan(
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                      children: [
-                                        TextSpan(text: product['product']),
-                                        TextSpan(
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w500),
-                                          text: invoice.first.length <= 1
-                                              ? ''
-                                              : ' + ${invoice.first.length}',
+                              Container(
+                                height: 150,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text.rich(
+                                      TextSpan(
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w700,
                                         ),
-                                        // TextSpan(
-                                        //   style: const TextStyle(
-                                        //       fontSize: 16,
-                                        //       color: Colors.black54,
-                                        //       fontWeight: FontWeight.w500),
-                                        //   text: '\nFrom -',
-                                        // ),
-                                        const TextSpan(
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              height: 1.6,
-                                              color: Colors.black54,
-                                              fontWeight: FontWeight.w500),
-                                          text: '\nDMart',
-                                        ),
-                                        TextSpan(
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            height: 1.2,
-                                            color: Colors.black54,
-                                            fontWeight: FontWeight.w500,
+                                        children: [
+                                          TextSpan(text: product['product']),
+                                          TextSpan(
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w500),
+                                            text: invoice.first.length <= 1
+                                                ? ''
+                                                : ' + ${invoice.first.length}',
                                           ),
-                                          text:
-                                              '\n${totalPrice(invoice.first)}',
-                                        ),
-                                      ],
+                                          TextSpan(
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                height: 1.6,
+                                                color: Colors.black54,
+                                                fontWeight: FontWeight.w500),
+                                            text: '\n${product['company']}',
+                                          ),
+                                          TextSpan(
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              height: 1.2,
+                                              color: Colors.black54,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            text:
+                                                '\n${totalPrice(invoice.first)}',
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                               const Spacer(),
                               IconButton(
@@ -319,6 +316,36 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       }),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const InvoiceDetailsScreen(),
+                      ),
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    minimumSize: const Size(100, 50),
+                  ),
+                  icon: const Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+                  label: TextWidget(
+                    title: 'Add Invoice',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),

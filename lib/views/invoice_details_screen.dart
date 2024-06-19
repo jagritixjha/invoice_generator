@@ -72,7 +72,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
             onPressed: () async {
               saveData();
               invoice.add(List.from(productList));
-              log('$invoice');
+              log('invoice = $invoice');
               productList.clear();
               await showDialog(
                 context: context,
